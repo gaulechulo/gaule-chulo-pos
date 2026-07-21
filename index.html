@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+
 <title>Gaule Chulo POS</title>
 
-<link rel="stylesheet" href="style.css">
 <link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="style.css">
 
 </head>
 
@@ -27,9 +29,12 @@
 
 <div class="box">
 
-<h3>Menu</h3>
+<button onclick="cat('All')">All</button>
+<button onclick="cat('Momo')">Momo</button>
+<button onclick="cat('Main')">Main</button>
+<button onclick="cat('Drink')">Drink</button>
 
-<div id="menu"></div>
+<div id="menu" class="menu"></div>
 
 </div>
 
@@ -40,9 +45,15 @@
 
 <div id="cart"></div>
 
+<p>Subtotal Rs <span id="sub">0</span></p>
+<p>VAT 13% Rs <span id="vat">0</span></p>
+
 <h2>Total Rs <span id="total">0</span></h2>
 
-<button onclick="saveSale()">Complete Sale</button>
+<button onclick="payment='Cash'">Cash</button>
+<button onclick="payment='FonePay'">FonePay</button>
+
+<button onclick="completeSale()">Complete Sale</button>
 
 </div>
 
@@ -53,27 +64,35 @@
 
 <script>
 
+
 const menu=[
 
-["Chicken Momo",220],
-["Veg Momo",150],
-["Chicken Thali",380],
-["Mutton Thali",490],
-["Chicken Burger",290],
-["Lassi",150]
+["Chicken Jhol Momo",220,"Momo"],
+["Veg Momo",150,"Momo"],
+["Buff Fried Momo",200,"Momo"],
+
+["Chicken Thali",380,"Main"],
+["Mutton Thali",490,"Main"],
+["Chicken Burger",290,"Main"],
+
+["Mango Lassi",150,"Drink"],
+["Mint Lemonade",120,"Drink"]
 
 ];
 
 
 let cart=[];
+let payment="Cash";
 
 
-function showMenu(){
+function cat(c){
 
 let html="";
 
 
 menu.forEach((x,i)=>{
+
+if(c==="All" || x[2]===c){
 
 html+=`
 
@@ -83,11 +102,15 @@ html+=`
 
 Rs ${x[1]}<br>
 
-<button onclick="add(${i})">ADD</button>
+<button onclick="add(${i})">
+ADD
+</button>
 
 </div>
 
 `;
+
+}
 
 });
 
@@ -111,28 +134,38 @@ update();
 function update(){
 
 let html="";
-
-let total=0;
+let sub=0;
 
 
 cart.forEach(x=>{
 
-html+=x[0]+" Rs "+x[1]+"<br>";
+sub+=x[1];
 
-total+=x[1];
+html+=`
+
+<div class="cart">
+${x[0]} Rs ${x[1]}
+</div>
+
+`;
 
 });
 
 
-document.getElementById("cart").innerHTML=html;
+let vat=sub*0.13;
 
-document.getElementById("total").innerHTML=total;
+
+document.getElementById("cart").innerHTML=html;
+document.getElementById("sub").innerHTML=sub;
+document.getElementById("vat").innerHTML=Math.round(vat);
+document.getElementById("total").innerHTML=Math.round(sub+vat);
 
 }
 
 
 
-function saveSale(){
+function completeSale(){
+
 
 let order={
 
@@ -141,6 +174,8 @@ date:new Date().toLocaleString(),
 items:cart,
 
 total:document.getElementById("total").innerHTML,
+
+payment:payment,
 
 status:"NEW"
 
@@ -151,20 +186,22 @@ if(typeof saveOrder==="function"){
 
 saveOrder(order);
 
+alert("Order sent to kitchen ✅");
+
+}else{
+
+alert("Database connection missing");
+
 }
 
-
-alert("Order Saved ✅");
 
 cart=[];
 
 update();
 
+
 }
 
-
-
-showMenu();
 
 
 if("serviceWorker" in navigator){
@@ -172,6 +209,9 @@ if("serviceWorker" in navigator){
 navigator.serviceWorker.register("service-worker.js");
 
 }
+
+
+cat("All");
 
 
 </script>
