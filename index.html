@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Gaule Chulo POS</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ea580c">
+
+<style>
+body{
+font-family:Arial;
+background:#f5f5f5;
+padding:10px;
+}
+h1{
+color:#ea580c;
+}
+.box{
+background:white;
+padding:15px;
+border-radius:12px;
+margin-bottom:10px;
+}
+.menu{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:8px;
+}
+button{
+background:#ea580c;
+color:white;
+border:0;
+padding:10px;
+border-radius:8px;
+}
+.item{
+background:#fff3e6;
+padding:10px;
+border-radius:8px;
+}
+.cart{
+border-bottom:1px solid #ddd;
+padding:8px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+<h1>Gaule Chulo POS</h1>
+</div>
+
+<div class="box">
+
+<h3>Menu</h3>
+
+<div id="menu" class="menu"></div>
+
+</div>
+
+
+<div class="box">
+
+<h3>Order</h3>
+
+<div id="cart"></div>
+
+<p>Subtotal: Rs <span id="sub">0</span></p>
+<p>VAT 13%: Rs <span id="vat">0</span></p>
+
+<h2>Total: Rs <span id="total">0</span></h2>
+
+<button onclick="pay='Cash'">
+Cash
+</button>
+
+<button onclick="pay='FonePay'">
+FonePay
+</button>
+
+</div>
+
+
+<script>
+
+const foods=[
+
+["Chicken Jhol Momo",220],
+["Veg Momo",150],
+["Chicken Thali",380],
+["Mutton Thali",490],
+["Chicken Burger",290],
+["Fries",130],
+["Mango Lassi",150],
+["Mint Lemonade",120]
+
+];
+
+
+let cart=[];
+let pay="";
+
+
+function load(){
+
+let html="";
+
+foods.forEach((f,i)=>{
+
+html+=`
+<div class="item">
+<b>${f[0]}</b><br>
+Rs ${f[1]}<br>
+<button onclick="add(${i})">
+Add
+</button>
+</div>`;
+
+});
+
+document.getElementById("menu").innerHTML=html;
+
+}
+
+
+
+function add(i){
+
+cart.push(foods[i]);
+show();
+
+}
+
+
+function removeItem(i){
+
+cart.splice(i,1);
+show();
+
+}
+
+
+function show(){
+
+let html="";
+let sub=0;
+
+
+cart.forEach((x,i)=>{
+
+sub+=x[1];
+
+html+=`
+<div class="cart">
+${x[0]} Rs ${x[1]}
+<button onclick="removeItem(${i})">
+X
+</button>
+</div>`;
+
+});
+
+
+let vat=sub*0.13;
+let total=sub+vat;
+
+
+document.getElementById("cart").innerHTML=html;
+document.getElementById("sub").innerHTML=sub;
+document.getElementById("vat").innerHTML=Math.round(vat);
+document.getElementById("total").innerHTML=Math.round(total);
+
+}
+
+
+if("serviceWorker" in navigator){
+navigator.serviceWorker.register("service-worker.js");
+}
+
+
+load();
+
+</script>
+
+</body>
+</html>
