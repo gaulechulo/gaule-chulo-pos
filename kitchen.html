@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Gaule Chulo Kitchen</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="box">
+
+<h1>👨‍🍳 GAULE CHULO KITCHEN</h1>
+
+<button onclick="goBack()">
+🛒 Cashier
+</button>
+
+</div>
+
+
+<div class="box">
+
+<h3>New Orders</h3>
+
+<div id="orders"></div>
+
+</div>
+
+
+</div>
+
+
+<script src="database.js"></script>
+
+
+<script>
+
+
+function goBack(){
+
+window.location.href="index.html";
+
+}
+
+
+
+function loadOrders(){
+
+let orders=getOrders();
+
+let html="";
+
+
+if(orders.length==0){
+
+html="<p>No orders</p>";
+
+}
+
+
+orders.forEach((o,i)=>{
+
+
+html+=`
+
+<div class="order">
+
+
+<h3>
+Order #${i+1}
+</h3>
+
+
+<b>Status:</b> ${o.status || "NEW"}
+
+
+<br><br>
+
+
+${o.items.map(item=>{
+
+return item[0];
+
+}).join("<br>")}
+
+
+<br><br>
+
+
+<button onclick="ready(${i})">
+
+READY
+
+</button>
+
+
+</div>
+
+
+`;
+
+
+});
+
+
+document.getElementById("orders").innerHTML=html;
+
+
+}
+
+
+
+
+function ready(i){
+
+let db=getDatabase();
+
+
+db.orders[i].status="READY";
+
+
+saveDatabase(db);
+
+
+loadOrders();
+
+
+}
+
+
+
+loadOrders();
+
+
+</script>
+
+
+</body>
+
+</html>

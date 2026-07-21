@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Gaule Chulo Stock</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+<div class="box">
+
+<h1>📦 GAULE CHULO STOCK</h1>
+
+
+<button onclick="goCashier()">
+
+🛒 Cashier
+
+</button>
+
+
+</div>
+
+
+
+<div class="box">
+
+
+<h3>Add Stock</h3>
+
+
+<input id="name" placeholder="Item name">
+
+
+<input id="qty" type="number" placeholder="Quantity">
+
+
+<button onclick="addNewStock()">
+
+Add
+
+</button>
+
+
+</div>
+
+
+
+
+<div class="box">
+
+
+<h3>Current Stock</h3>
+
+
+<div id="stock"></div>
+
+
+</div>
+
+
+</div>
+
+
+
+
+<script src="database.js"></script>
+
+
+
+<script>
+
+
+function goCashier(){
+
+window.location.href="index.html";
+
+}
+
+
+
+function addNewStock(){
+
+
+let name=document.getElementById("name").value;
+
+let qty=Number(
+document.getElementById("qty").value
+);
+
+
+
+if(name && qty){
+
+addStock(name,qty);
+
+
+document.getElementById("name").value="";
+
+document.getElementById("qty").value="";
+
+
+showStock();
+
+
+}
+
+
+}
+
+
+
+
+function showStock(){
+
+
+let data=getStock();
+
+
+let html="";
+
+
+if(data.length==0){
+
+html="<p>No stock added</p>";
+
+}
+
+
+
+data.forEach(x=>{
+
+
+html+=`
+
+<div class="item">
+
+<b>${x.name}</b>
+
+<br>
+
+Quantity: ${x.qty}
+
+</div>
+
+
+`;
+
+
+});
+
+
+
+document.getElementById("stock").innerHTML=html;
+
+
+}
+
+
+
+showStock();
+
+
+</script>
+
+
+</body>
+
+</html>

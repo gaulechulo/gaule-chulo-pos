@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Gaule Chulo Dashboard</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+<div class="box">
+
+<h1>📊 GAULE CHULO DASHBOARD</h1>
+
+
+<button onclick="openPage('index.html')">
+🛒 Cashier
+</button>
+
+
+<button onclick="openPage('kitchen.html')">
+👨‍🍳 Kitchen
+</button>
+
+
+<button onclick="openPage('stock.html')">
+📦 Stock
+</button>
+
+
+</div>
+
+
+
+
+<div class="box">
+
+<h3>Total Orders</h3>
+
+<h2 id="orders">0</h2>
+
+</div>
+
+
+
+<div class="box">
+
+<h3>Total Sales</h3>
+
+<h2>Rs <span id="sales">0</span></h2>
+
+</div>
+
+
+
+
+<div class="box">
+
+<h3>Payment Summary</h3>
+
+
+<p>
+Cash:
+Rs <span id="cash">0</span>
+</p>
+
+
+<p>
+FonePay:
+Rs <span id="fone">0</span>
+</p>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+<script src="database.js"></script>
+
+
+
+<script>
+
+
+function openPage(page){
+
+window.location.href=page;
+
+}
+
+
+
+let orders=getOrders();
+
+
+let total=0;
+
+let cash=0;
+
+let fone=0;
+
+
+
+orders.forEach(o=>{
+
+
+total+=Number(o.total);
+
+
+
+if(o.payment=="Cash"){
+
+cash+=Number(o.total);
+
+}
+
+
+
+if(o.payment=="FonePay"){
+
+fone+=Number(o.total);
+
+}
+
+
+
+});
+
+
+
+
+document.getElementById("orders").innerHTML=
+orders.length;
+
+
+
+document.getElementById("sales").innerHTML=
+Math.round(total);
+
+
+
+document.getElementById("cash").innerHTML=
+Math.round(cash);
+
+
+
+document.getElementById("fone").innerHTML=
+Math.round(fone);
+
+
+
+</script>
+
+
+</body>
+
+</html>
