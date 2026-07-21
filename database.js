@@ -31,14 +31,31 @@ JSON.stringify(data)
 
 function saveOrder(order){
 
-let db=getDatabase();
+let db = getDatabase();
 
 db.orders.push(order);
 
 
+// reduce stock
 order.items.forEach(item=>{
 
-reduceStock(item[0],1);
+let stockItem = db.stock.find(
+x=>x.name === item[0]
+);
+
+
+if(stockItem){
+
+stockItem.qty -= 1;
+
+if(stockItem.qty < 0){
+
+stockItem.qty = 0;
+
+}
+
+}
+
 
 });
 
@@ -63,6 +80,7 @@ function addStock(name,qty){
 
 let db=getDatabase();
 
+
 let item=db.stock.find(
 x=>x.name===name
 );
@@ -70,42 +88,17 @@ x=>x.name===name
 
 if(item){
 
-item.qty+=qty;
+item.qty += qty;
 
 }else{
 
 db.stock.push({
+
 name:name,
+
 qty:qty
+
 });
-
-}
-
-
-saveDatabase(db);
-
-}
-
-
-
-
-
-function reduceStock(name,qty){
-
-let db=getDatabase();
-
-let item=db.stock.find(
-x=>x.name===name
-);
-
-
-if(item){
-
-item.qty-=qty;
-
-if(item.qty<0){
-item.qty=0;
-}
 
 }
 
