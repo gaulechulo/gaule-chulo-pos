@@ -7,44 +7,15 @@
 <title>Gaule Chulo POS</title>
 
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#ea580c">
 
 <style>
-body{
-font-family:Arial;
-background:#f5f5f5;
-padding:10px;
-}
-h1{
-color:#ea580c;
-}
-.box{
-background:white;
-padding:15px;
-border-radius:12px;
-margin-bottom:10px;
-}
-.menu{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:8px;
-}
-button{
-background:#ea580c;
-color:white;
-border:0;
-padding:10px;
-border-radius:8px;
-}
-.item{
-background:#fff3e6;
-padding:10px;
-border-radius:8px;
-}
-.cart{
-border-bottom:1px solid #ddd;
-padding:8px;
-}
+body{font-family:Arial;background:#f5f5f5;padding:10px}
+h1{color:#ea580c}
+.box{background:white;padding:12px;border-radius:12px;margin-bottom:10px}
+button{background:#ea580c;color:white;border:0;padding:8px;border-radius:6px;margin:3px}
+.menu{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.item{background:#fff3e6;padding:10px;border-radius:8px}
+.cart{border-bottom:1px solid #ddd;padding:8px}
 </style>
 
 </head>
@@ -52,12 +23,15 @@ padding:8px;
 <body>
 
 <div class="box">
-<h1>Gaule Chulo POS</h1>
+<h1>GAULE CHULO POS</h1>
 </div>
 
 <div class="box">
 
-<h3>Menu</h3>
+<button onclick="cat('All')">All</button>
+<button onclick="cat('Momo')">Momo</button>
+<button onclick="cat('Main')">Main</button>
+<button onclick="cat('Drink')">Drink</button>
 
 <div id="menu" class="menu"></div>
 
@@ -66,114 +40,154 @@ padding:8px;
 
 <div class="box">
 
-<h3>Order</h3>
+<h3>Cart</h3>
 
 <div id="cart"></div>
 
-<p>Subtotal: Rs <span id="sub">0</span></p>
-<p>VAT 13%: Rs <span id="vat">0</span></p>
+<p>Subtotal Rs <span id="sub">0</span></p>
+<p>VAT 13% Rs <span id="vat">0</span></p>
 
-<h2>Total: Rs <span id="total">0</span></h2>
+<h2>Total Rs <span id="total">0</span></h2>
 
-<button onclick="pay='Cash'">
-Cash
-</button>
+<button onclick="payment='Cash'">Cash</button>
+<button onclick="payment='FonePay'">FonePay</button>
 
-<button onclick="pay='FonePay'">
-FonePay
-</button>
+<br>
+
+<button onclick="saveSale()">Complete Sale</button>
+<button onclick="receipt()">Receipt</button>
 
 </div>
 
 
 <script>
 
-const foods=[
-
-["Chicken Jhol Momo",220],
-["Veg Momo",150],
-["Chicken Thali",380],
-["Mutton Thali",490],
-["Chicken Burger",290],
-["Fries",130],
-["Mango Lassi",150],
-["Mint Lemonade",120]
-
+const menu=[
+["Chicken Jhol Momo",220,"Momo"],
+["Veg Momo",150,"Momo"],
+["Buff Fried Momo",200,"Momo"],
+["Chicken Thali",380,"Main"],
+["Mutton Thali",490,"Main"],
+["Chicken Burger",290,"Main"],
+["Mango Lassi",150,"Drink"],
+["Mint Lemonade",120,"Drink"]
 ];
 
-
 let cart=[];
-let pay="";
+let payment="";
 
 
-function load(){
+function cat(c){
 
-let html="";
+let h="";
 
-foods.forEach((f,i)=>{
+menu.forEach((x,i)=>{
 
-html+=`
+if(c=="All"||x[2]==c){
+
+h+=`
 <div class="item">
-<b>${f[0]}</b><br>
-Rs ${f[1]}<br>
-<button onclick="add(${i})">
-Add
-</button>
+<b>${x[0]}</b><br>
+Rs ${x[1]}<br>
+<button onclick="add(${i})">ADD</button>
 </div>`;
-
-});
-
-document.getElementById("menu").innerHTML=html;
 
 }
 
+});
+
+document.getElementById("menu").innerHTML=h;
+
+}
 
 
 function add(i){
 
-cart.push(foods[i]);
-show();
+cart.push(menu[i]);
+update();
 
 }
 
 
-function removeItem(i){
+function remove(i){
 
 cart.splice(i,1);
-show();
+update();
 
 }
 
 
-function show(){
+function update(){
 
-let html="";
+let h="";
 let sub=0;
-
 
 cart.forEach((x,i)=>{
 
 sub+=x[1];
 
-html+=`
+h+=`
 <div class="cart">
 ${x[0]} Rs ${x[1]}
-<button onclick="removeItem(${i})">
-X
-</button>
+<button onclick="remove(${i})">X</button>
 </div>`;
 
 });
 
 
 let vat=sub*0.13;
-let total=sub+vat;
 
-
-document.getElementById("cart").innerHTML=html;
+document.getElementById("cart").innerHTML=h;
 document.getElementById("sub").innerHTML=sub;
 document.getElementById("vat").innerHTML=Math.round(vat);
-document.getElementById("total").innerHTML=Math.round(total);
+document.getElementById("total").innerHTML=Math.round(sub+vat);
+
+}
+
+
+
+function saveSale(){
+
+let sale={
+date:new Date().toLocaleString(),
+items:cart,
+total:document.getElementById("total").innerHTML,
+payment:payment
+};
+
+
+let old=JSON.parse(localStorage.getItem("sales"))||[];
+
+old.push(sale);
+
+localStorage.setItem("sales",JSON.stringify(old));
+
+alert("Sale Saved");
+
+cart=[];
+update();
+
+}
+
+
+
+function receipt(){
+
+let t="GAULE CHULO\n\n";
+
+cart.forEach(x=>{
+t+=x[0]+" Rs "+x[1]+"\n";
+});
+
+t+="\nTOTAL Rs "+document.getElementById("total").innerHTML;
+t+="\n"+payment;
+
+
+let w=window.open("");
+
+w.document.write("<pre>"+t+"</pre>");
+
+w.print();
 
 }
 
@@ -183,7 +197,7 @@ navigator.serviceWorker.register("service-worker.js");
 }
 
 
-load();
+cat("All");
 
 </script>
 
